@@ -1,12 +1,14 @@
 import { createContext, Dispatch, useContext, useReducer } from "react";
 
 import { AppAction, AppContextType, IData } from "./DataStateModels";
+import { auth } from "../../Firebase/config";
 
 export const initialNav = [];
 
 export const defaultValue: IData = {
   category: [],
   items: [],
+  isLoggedIn: false,
 };
 
 export const dataReducer = (state: IData, action: AppAction) => {
@@ -20,6 +22,11 @@ export const dataReducer = (state: IData, action: AppAction) => {
       return {
         ...state,
         items: [...action.payload],
+      };
+    case "auth":
+      return {
+        ...state,
+        auth: action.payload,
       };
     default:
       return state;

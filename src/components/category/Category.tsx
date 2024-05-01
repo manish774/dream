@@ -57,7 +57,6 @@ const Category = () => {
               fullWidth
               id="category_name"
               label="category Name"
-              autoFocus
               onChange={handleCategory}
             />
           </Grid>

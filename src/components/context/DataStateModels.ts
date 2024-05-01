@@ -6,14 +6,17 @@ export type ICategoryProps = {
 };
 
 export type IItems = ICategoryProps & {
-  category_id: number;
-  price: number;
+  category_id: number | string;
+  price: number | string;
   description: string;
+  category: string;
+  date: string;
 };
 
 export interface IData {
   category: ICategoryProps[];
   items: IItems[];
+  isLoggedIn: boolean;
 }
 
 export type AppAction =
@@ -21,6 +24,10 @@ export type AppAction =
   | {
       type: "addItems";
       payload: IItems[];
+    }
+  | {
+      type: "auth";
+      payload: boolean;
     };
 
 export interface AppContextType {

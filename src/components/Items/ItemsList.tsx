@@ -20,16 +20,18 @@ const ItemsList = () => {
 
   useEffect(() => {
     const calculatePrice = state?.items?.reduce(
-      (acc, curr) => acc + curr.price,
+      (acc, curr) => acc + parseFloat(String(curr.price) || "0"), // Convert curr.price to string before parsing
       0
     );
     setTotalPrice(calculatePrice);
   }, [state]);
 
+  const formatDate = (date: string) => new Date(date).toDateString();
+
   return (
     <div>
       <Grid>
-        <h3>Categories</h3>
+        <h3>Items</h3>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
@@ -38,6 +40,7 @@ const ItemsList = () => {
                 <TableCell>Name</TableCell>
                 <TableCell>Category</TableCell>
                 <TableCell>Price</TableCell>
+                <TableCell>Date</TableCell>
                 <TableCell>Description</TableCell>
               </TableRow>
             </TableHead>
@@ -53,6 +56,7 @@ const ItemsList = () => {
                   <TableCell align="left">{row.name}</TableCell>
                   <TableCell align="left">{row.category_id}</TableCell>
                   <TableCell align="left">{row.price}</TableCell>
+                  <TableCell align="left">{formatDate(row.date)}</TableCell>
                   <TableCell align="left">{row.description}</TableCell>
                 </TableRow>
               ))}

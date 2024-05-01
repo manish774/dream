@@ -1,43 +1,60 @@
-import React, { useState } from "react";
-import logo from "./logo.svg";
+import { useState } from "react";
 import "./App.css";
 
 import Category from "./components/category/Category";
 import Header from "./components/Header";
-import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Tab, Tabs, Box } from "@mui/material";
 import Items from "./components/Items/Items";
+import { useDataStateContext } from "./components/context/DataStateContext";
 
 function App() {
+  const [value, setValue] = useState(0);
+  const { state } = useDataStateContext();
+  const handleChange = (event: any, newValue: any) => {
+    setValue(newValue);
+  };
+
   return (
     <div className="app-main-container">
       <div className="app-form-container">
         <Header />
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1-content"
-            id="panel1-header"
-          >
-            Cataegory
-          </AccordionSummary>
-          <AccordionDetails>
-            <Category />
-          </AccordionDetails>
-        </Accordion>
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1-content"
-            id="panel1-header"
-          >
-            Items
-          </AccordionSummary>
-          <AccordionDetails>
-            <Items />
-          </AccordionDetails>
-        </Accordion>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          variant="fullWidth"
+          aria-label="tabs"
+        >
+          <Tab label="Items" />
+          <Tab label="Category" />
+        </Tabs>
+        <Box>
+          {value === 0 && (
+            <TabPanel value={value} index={0}>
+              <Items />
+            </TabPanel>
+          )}
+          {value === 1 && (
+            <TabPanel value={value} index={1}>
+              <Category />
+            </TabPanel>
+          )}
+        </Box>
       </div>
+    </div>
+  );
+}
+
+function TabPanel(props: any) {
+  const { children, value, index } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`tabpanel-${index}`}
+      aria-labelledby={`tab-${index}`}
+    >
+      {value === index && <Box p={3}>{children}</Box>}
     </div>
   );
 }
