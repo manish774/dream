@@ -27,12 +27,11 @@ const Items = () => {
   const [isLoading, setIsloading] = useState(false);
   const initData = {
     name: "",
-    id: 0,
     category_id: "",
     description: "",
     price: "",
     category: "",
-    date: "",
+    date: new Date().toISOString().split("T")[0],
   };
   const [item, setItem] = useState<IItems>(initData);
 
@@ -51,18 +50,19 @@ const Items = () => {
     const inputType = e?.target.name;
     setItem((prev) => ({
       ...prev,
-      id: Math.floor(Math.random() * 999999999),
       [inputType]: e.target.value,
     }));
   };
 
   useEffect(() => {
-    setIsloading(true);
     const getCategory = async () => {
       setIsFormValid(false);
       try {
         const data = await getDocs(categoryList);
-        const categoryData: any = data?.docs?.map((doc) => doc?.data());
+        const categoryData: any = data?.docs?.map((doc) => ({
+          ...doc?.data(),
+          id: doc?.id,
+        }));
         categoryData?.length &&
           dispatch({ type: "addCategory", payload: categoryData });
         setItem(initData);
@@ -71,14 +71,16 @@ const Items = () => {
       }
     };
     getCategory();
-    setIsloading(false);
   }, [dispatch]);
 
   useEffect(() => {
     const getCategory = async () => {
       try {
         const data = await getDocs(itemList);
-        const itemData: any = data?.docs?.map((doc) => doc?.data());
+        const itemData: any = data?.docs?.map((doc) => ({
+          ...doc?.data(),
+          id: doc?.id,
+        }));
         itemData?.length && dispatch({ type: "addItems", payload: itemData });
         console.log(itemData);
       } catch (e) {

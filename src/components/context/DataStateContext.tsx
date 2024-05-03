@@ -26,7 +26,7 @@ export const dataReducer = (state: IData, action: AppAction) => {
     case "auth":
       return {
         ...state,
-        auth: action.payload,
+        isLoggedIn: action.payload,
       };
     default:
       return state;

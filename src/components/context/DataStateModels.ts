@@ -2,7 +2,7 @@ import { Dispatch } from "react";
 
 export type ICategoryProps = {
   name: string;
-  id: number;
+  id?: string;
 };
 
 export type IItems = ICategoryProps & {

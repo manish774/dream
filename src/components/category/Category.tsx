@@ -2,7 +2,13 @@ import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 
 import CategoryList from "./CategoryList";
 import { useEffect, useState } from "react";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  deleteDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../Firebase/config";
 import { ICategoryProps } from "../context/DataStateModels";
 import { useDataStateContext } from "../context/DataStateContext";
@@ -23,7 +29,6 @@ const Category = () => {
 
   const handleCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCategory({
-      id: Math.floor(Math.random() * 10000000),
       name: e?.target.value,
     });
   };
@@ -31,8 +36,14 @@ const Category = () => {
   useEffect(() => {
     const getCategory = async () => {
       try {
+        // const data = await getDocs(categoryList);
+        // const categoryData: any = data?.docs?.map((doc) => doc?.data());
+
         const data = await getDocs(categoryList);
-        const categoryData: any = data?.docs?.map((doc) => doc?.data());
+        const categoryData: any = data?.docs?.map((doc) => {
+          return { ...doc.data(), id: doc.id };
+        });
+
         categoryData?.length &&
           dispatch({ type: "addCategory", payload: categoryData });
       } catch (e) {

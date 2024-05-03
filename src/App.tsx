@@ -14,7 +14,8 @@ function App() {
     setValue(newValue);
   };
 
-  return (
+  console.log(state?.isLoggedIn);
+  return state?.isLoggedIn ? (
     <div className="app-main-container">
       <div className="app-form-container">
         <Header />
@@ -41,6 +42,8 @@ function App() {
         </Box>
       </div>
     </div>
+  ) : (
+    <Header />
   );
 }
 
