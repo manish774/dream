@@ -15,7 +15,7 @@ function App() {
   };
 
   console.log(state?.isLoggedIn);
-  return state?.isLoggedIn ? (
+  return !state?.isLoggedIn ? (
     <div className="app-main-container">
       <div className="app-form-container">
         <Header />
