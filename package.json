@@ -28,10 +28,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "predeploy": "CI=False && npm run build",
-    "deploy": "CI=False && gh-pages -d build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
-    "build": "CI=False && react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
