@@ -101,7 +101,7 @@ const CategoryList = () => {
           <Table stickyHeader aria-label="sticky table">
             <TableHead className={"table-header"}>
               <TableRow>
-                <TableCell width={"20px"}>Id</TableCell>
+                {/* <TableCell width={"20px"}>Id</TableCell> */}
                 <TableCell>Name</TableCell>
                 {/* <TableCell></TableCell> */}
                 <TableCell></TableCell>
@@ -113,7 +113,7 @@ const CategoryList = () => {
                   key={row.name}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell align="left">{row.id}</TableCell>
+                  {/* <TableCell align="left">{row.id}</TableCell> */}
                   <TableCell align="left">
                     <input
                       ref={inputRef}

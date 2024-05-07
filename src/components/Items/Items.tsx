@@ -21,7 +21,7 @@ const Items = () => {
       behavior: "smooth",
     });
   };
-  console.log(editId, mode);
+
   return (
     <>
       <Box component="form" noValidate sx={{ mt: 3 }} ref={scrollRef}>

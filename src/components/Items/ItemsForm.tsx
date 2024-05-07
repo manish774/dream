@@ -36,7 +36,6 @@ const ItemsForm = ({ mode, id, handleMode }: IItemFormProps) => {
   const { dispatch, state } = useDataStateContext();
   const [refreshToken, setRefreshToken] = useState<number>(0);
   const [isFormValid, setIsFormValid] = useState(false);
-  const scrollToRef = useRef(null);
 
   const defaultDateTime = () => {
     const now = new Date();
@@ -59,6 +58,7 @@ const ItemsForm = ({ mode, id, handleMode }: IItemFormProps) => {
   const [item, setItem] = useState<IItems>(initData);
   console.log(mode, id);
   const addItem = async () => {
+    setIsFormValid(false);
     try {
       const adding = await addDoc(itemList, item);
       console.log(adding.id);
@@ -79,7 +79,6 @@ const ItemsForm = ({ mode, id, handleMode }: IItemFormProps) => {
 
   useEffect(() => {
     const getCategory = async () => {
-      setIsFormValid(false);
       try {
         const data = await getDocs(categoryList);
         const categoryData: any = data?.docs?.map((doc) => ({
@@ -156,18 +155,9 @@ const ItemsForm = ({ mode, id, handleMode }: IItemFormProps) => {
     }
   };
 
-  const scrollToElement = () => {
-    if (scrollToRef.current) {
-      //@ts-ignore
-      scrollToRef?.current?.scrollTo({
-        top: 0,
-        behavior: "smooth", // Optional, smooth scrolling effect
-      });
-    }
-  };
   return (
     <div>
-      <Typography component="h1" variant="h5" ref={scrollToRef}>
+      <Typography component="h1" variant="h5">
         Add Item
       </Typography>
       <Box component="form" noValidate sx={{ mt: 3 }}>
@@ -242,8 +232,7 @@ const ItemsForm = ({ mode, id, handleMode }: IItemFormProps) => {
           </Grid>
           <Grid item xs={12} sm={12}>
             <button
-              type="submit"
-              style={{ width: "100%", padding: "20px" }}
+              style={{ width: "100%", padding: "10px 20px", height: "50px" }}
               onClick={(e) => {
                 e.preventDefault();
                 mode === "ADD" ? addItem() : updateItem();

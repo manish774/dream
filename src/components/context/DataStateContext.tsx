@@ -1,7 +1,6 @@
-import { createContext, Dispatch, useContext, useReducer } from "react";
+import { createContext, useContext } from "react";
 
 import { AppAction, AppContextType, IData } from "./DataStateModels";
-import { auth } from "../../Firebase/config";
 
 export const initialNav = [];
 
