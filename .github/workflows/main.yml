@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - main  # adjust branch name as needed
+      - main # adjust branch name as needed
 
 jobs:
   deploy:
@@ -16,13 +16,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'  # adjust node version as needed
+          node-version: "20" # adjust node version as needed
 
       - name: Install dependencies
         run: npm install
 
       - name: Build
-        run: npm run build  # adjust the build script as needed
+        run: npm run build # adjust the build script as needed
+
+      - name: Configure Git user
+        run: |
+          git config --global user.email "manishranbir774@gmail.com"
+          git config --global user.name "manish774"
 
       - name: Deploy
         run: npm run deploy
