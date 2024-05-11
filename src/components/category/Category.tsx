@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 
 import CategoryList from "./CategoryList";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getDocs } from "firebase/firestore";
 import { useDataStateContext } from "../context/DataStateContext";
 import { categoryList } from "../Utils/Utils";
@@ -9,6 +9,12 @@ import CategoryForm from "./CategoryForm";
 
 const Category = () => {
   const { dispatch, state } = useDataStateContext();
+  const [refreshToken, setRefreshToken] = useState(state?.refreshToken);
+
+  const refresh = () => {
+    setRefreshToken((prev) => prev + 1);
+    console.log(refreshToken, "dddddd");
+  };
 
   useEffect(() => {
     const getCategory = async () => {
@@ -25,12 +31,12 @@ const Category = () => {
       }
     };
     getCategory();
-  }, [dispatch]);
+  }, [dispatch, refreshToken]);
 
   return (
     <>
-      <CategoryForm />
-      <CategoryList />
+      <CategoryForm refresh={refresh} />
+      <CategoryList refresh={refresh} />
     </>
   );
 };

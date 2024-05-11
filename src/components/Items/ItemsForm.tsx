@@ -125,13 +125,12 @@ const ItemsForm = ({ mode, id, handleMode }: IItemFormProps) => {
 
   useEffect(() => {
     if (mode === "EDIT" && id !== "") {
-      debugger;
       const { category, price, description, name, date } = state?.items?.find(
         (item) => item?.id === id
       ) as IItems;
       setItem({ category, price, description, name, date });
     }
-  }, [mode, id]);
+  }, [mode, id, state]);
 
   const updateItem = () => {
     if (id && mode === "EDIT") {

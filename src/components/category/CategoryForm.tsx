@@ -3,16 +3,29 @@ import { addDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import { categoryList } from "../Utils/Utils";
 import { ICategoryProps } from "../context/DataStateModels";
+import { useDataStateContext } from "../context/DataStateContext";
 
-const CategoryForm = () => {
+const CategoryForm = ({ refresh }: { refresh: () => any }) => {
+  const { state, dispatch } = useDataStateContext();
   const [category, setCategory] = useState<ICategoryProps>();
 
+  const [isButtonDisable, setIsButtonDisable] = useState(false);
   const addCategory = async () => {
+    setIsButtonDisable(true);
     try {
       await addDoc(categoryList, category);
+      category &&
+        dispatch({
+          type: "addCategory",
+          payload: [...state?.category, category],
+        });
+      setCategory({ name: "" });
+      dispatch({ type: "refresh", payload: state?.refreshToken + 1 });
+      refresh();
     } catch (e) {
       console.log(e);
     }
+    setIsButtonDisable(false);
   };
 
   const handleCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,16 +47,17 @@ const CategoryForm = () => {
               name="category_name"
               required
               fullWidth
+              value={category?.name}
               id="category_name"
               label="category Name"
               onChange={handleCategory}
             />
           </Grid>
           <Button
-            type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={isButtonDisable}
             onClick={(e) => {
               e.preventDefault();
               addCategory();

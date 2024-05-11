@@ -8,6 +8,7 @@ export const defaultValue: IData = {
   category: [],
   items: [],
   isLoggedIn: false,
+  refreshToken: 0,
 };
 
 export const dataReducer = (state: IData, action: AppAction) => {
@@ -26,6 +27,11 @@ export const dataReducer = (state: IData, action: AppAction) => {
       return {
         ...state,
         isLoggedIn: action.payload,
+      };
+    case "refresh":
+      return {
+        ...state,
+        refreshToken: action.payload,
       };
     default:
       return state;

@@ -5,3 +5,18 @@
 .table-header1 > tr > th {
   background-color: rgb(189, 171, 8) !important;
 }
+
+.item-container {
+  border-radius: 10px;
+  background: #ffdb58;
+  box-shadow: -20px -20px 60px #bebebe, 20px 20px 60px #ffffff;
+  padding: 10px;
+}
+
+.item-table-container {
+  margin-top: 20px;
+  border-radius: 10px;
+  // background: #ffdb58;
+  box-shadow: -20px -20px 60px #bebebe, 20px 20px 60px #ffffff;
+  padding: 10px;
+}

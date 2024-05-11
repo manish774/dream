@@ -18,6 +18,7 @@ export interface IData {
   category: ICategoryProps[];
   items: IItems[];
   isLoggedIn: boolean;
+  refreshToken?: number;
 }
 
 export type AppAction =
@@ -29,6 +30,10 @@ export type AppAction =
   | {
       type: "auth";
       payload: boolean;
+    }
+  | {
+      type: "refresh";
+      payload: number;
     };
 
 export interface AppContextType {

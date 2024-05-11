@@ -18,6 +18,7 @@ import { createCategoryWiseData } from "../Utils/Utils";
 import EditIcon from "@mui/icons-material/Edit";
 import "./items.scss";
 import { TModes } from "./Items";
+import { Modal } from "../Modal";
 
 const ItemsList = ({
   handleMode,
@@ -27,6 +28,8 @@ const ItemsList = ({
   const { state, dispatch } = useDataStateContext();
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [categoryData, setCategoryData] = useState<IItems[]>([]); // State to hold category-wise data
+  const [selectedIdToDelete, setSelectedIdToDelete] = useState<string>("");
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const calculatePrice = state?.items?.reduce(
@@ -49,12 +52,12 @@ const ItemsList = ({
       date
     ).toLocaleTimeString()}`;
 
-  const deleteItem = async (id: any) => {
-    const itemDoc = doc(db, "Items", id);
+  const deleteItem = async () => {
+    const itemDoc = doc(db, "Items", selectedIdToDelete);
     await deleteDoc(itemDoc);
     dispatch({
       type: "addItems",
-      payload: state?.items?.filter((d) => d?.id !== id),
+      payload: state?.items?.filter((d) => d?.id !== selectedIdToDelete),
     });
   };
 
@@ -64,6 +67,11 @@ const ItemsList = ({
 
   const onEdit = (id: string) => {
     handleMode("EDIT", id);
+  };
+
+  const showDialogBox = (id: string) => {
+    setSelectedIdToDelete(id);
+    setIsDialogOpen(true);
   };
 
   return (
@@ -110,7 +118,7 @@ const ItemsList = ({
                         <button
                           onClick={(e) => {
                             e.preventDefault();
-                            deleteItem(row.id);
+                            showDialogBox(row.id);
                           }}
                         >
                           <DeleteIcon />
@@ -122,6 +130,32 @@ const ItemsList = ({
               </Table>
             </TableContainer>
           </div>
+          {isDialogOpen && (
+            <Modal
+              isDialogOpen={isDialogOpen}
+              component={
+                <>
+                  Are you sure want to delete{" "}
+                  <h5 style={{ display: "inline" }}>
+                    {
+                      state?.items?.find((it) => it?.id === selectedIdToDelete)
+                        .name
+                    }
+                  </h5>{" "}
+                  ?
+                </>
+              }
+              dialogSize={"SMALL"}
+              onCloseAction={() => {
+                setIsDialogOpen(false);
+              }}
+              submitClick={() => {
+                deleteItem();
+                setIsDialogOpen(false);
+                setSelectedIdToDelete("");
+              }}
+            />
+          )}
         </Grid>
         <h3>Total: {totalPrice}</h3>
       </Paper>

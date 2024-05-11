@@ -2,6 +2,8 @@ import { Box, Grid } from "@mui/material";
 import ItemsList from "./ItemsList";
 import ItemsForm from "./ItemsForm";
 import { useRef, useState } from "react";
+import "./items.scss";
+import { Breadcrumbs, Badge, CircleBadge } from "@manish774/smarty-ui";
 
 export type TModes = "ADD" | "EDIT";
 const Items = () => {
@@ -25,12 +27,17 @@ const Items = () => {
   return (
     <>
       <Box component="form" noValidate sx={{ mt: 3 }} ref={scrollRef}>
-        <Grid item xs={12} sm={12}>
+        <Breadcrumbs />
+        <Badge label="test" type={"bordered"} theme={"warning"} />
+        <CircleBadge labels={["test", "jhhjgj"]} />
+        <Grid item xs={12} sm={12} className={"item-container"}>
           <ItemsForm
             mode={mode}
             id={mode === "EDIT" ? editId : ""}
             handleMode={handleEditMode}
           />
+        </Grid>
+        <Grid className={"item-table-container"}>
           <ItemsList handleMode={handleEditMode} />
         </Grid>
       </Box>

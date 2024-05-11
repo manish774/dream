@@ -2,7 +2,6 @@ import {
   Grid,
   TableContainer,
   Paper,
-  Table,
   TableHead,
   TableRow,
   TableCell,
@@ -17,16 +16,31 @@ import EditIcon from "@mui/icons-material/Edit";
 import { categoryDoc, categoryList } from "../Utils/Utils";
 import "../Items/items.scss";
 import "./Category.scss";
-const CategoryList = () => {
+import { Modal } from "../Modal";
+
+import { Table } from "@manish774/smarty-ui";
+
+const CategoryList = ({ refresh }: { refresh: () => any }) => {
   const { state, dispatch } = useDataStateContext();
   const [category, setCategory] = useState<ICategoryProps[]>([]);
   const [refreshToken, setRefreshToken] = useState(0);
-  const deleteCategory = async (id: any) => {
-    await deleteDoc(categoryDoc(id));
-    dispatch({
-      type: "addCategory",
-      payload: category?.filter((d) => d?.id !== id),
-    });
+  const [selectedIdToDelete, setSelectedIdToDelete] = useState<string>("");
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+  const deleteCategory = async () => {
+    if (selectedIdToDelete) {
+      await deleteDoc(categoryDoc(selectedIdToDelete));
+      dispatch({
+        type: "addCategory",
+        payload: category?.filter((d) => d?.id !== selectedIdToDelete),
+      });
+      refresh();
+    }
+  };
+
+  const showDialogBox = (id: string) => {
+    setSelectedIdToDelete(id);
+    setIsDialogOpen(true);
   };
 
   useEffect(() => {
@@ -41,12 +55,13 @@ const CategoryList = () => {
           oldValue: doc.data().name,
         }));
         setCategory(categoryData as ICategoryProps[]);
+        console.log(categoryData);
       } catch (e) {
         console.log(e);
       }
     };
     getCategory();
-  }, []);
+  }, [refresh]);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -70,7 +85,9 @@ const CategoryList = () => {
   };
 
   const onChangeHandler = (id: string, value: string) => {
+    console.log(id);
     const enableEditModeForId = category?.map((m) => {
+      debugger;
       return m.id === id
         ? {
             ...m,
@@ -91,67 +108,176 @@ const CategoryList = () => {
       payload: updatedCatagories,
     });
     setCategory(updatedCatagories);
+    setRefreshToken((prev) => prev + 1);
   };
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <Grid>
-        <h3>Categories</h3>
-        <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
-          <Table stickyHeader aria-label="sticky table">
-            <TableHead className={"table-header"}>
-              <TableRow>
-                {/* <TableCell width={"20px"}>Id</TableCell> */}
-                <TableCell>Name</TableCell>
-                {/* <TableCell></TableCell> */}
-                <TableCell></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {(category || []).map((row: ICategoryProps) => (
-                <TableRow
-                  key={row.name}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  {/* <TableCell align="left">{row.id}</TableCell> */}
-                  <TableCell align="left">
-                    <input
-                      ref={inputRef}
-                      value={row.name}
-                      disabled={!row?.isEdit}
-                      onChange={(e) =>
-                        row?.id && onChangeHandler(row?.id, e.target?.value)
-                      }
-                      className="editCategoryInput"
-                      id={`edit-${row?.id}`}
-                      onBlur={(e) => {
-                        row?.id && saveEditedCategory(row?.id, e.target?.value);
-                      }}
-                    />
-                  </TableCell>
-                  {/* <TableCell align="left">
-                    <DeleteIcon
-                      onClick={(e) => {
-                        e.preventDefault();
-                        deleteCategory(row.id);
-                      }}
-                    />
-                  </TableCell> */}
-                  <TableCell align="left">
-                    <EditIcon
-                      onClick={(e) => {
-                        e.preventDefault();
-                        row.id && onEdit(row?.id);
-                      }}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Grid>
-    </Paper>
+    <>
+      <Table
+        records={category}
+        config={{
+          title: "Category",
+          columns: [
+            {
+              id: "name",
+              name: "name",
+              searchable: true,
+              render: (row) => {
+                return (
+                  <input
+                    key={row?.id}
+                    ref={inputRef}
+                    value={row.name}
+                    disabled={!row?.isEdit}
+                    onChange={(e) =>
+                      row?.id && onChangeHandler(row?.id, e.target?.value)
+                    }
+                    className="editCategoryInput"
+                    id={`edit-${row?.id}`}
+                    onBlur={(e) => {
+                      row?.id && saveEditedCategory(row?.id, e.target?.value);
+                    }}
+                  />
+                );
+              },
+            },
+            {
+              id: "edit",
+              name: "",
+              render: (row) => {
+                return (
+                  <EditIcon
+                    onClick={(e) => {
+                      row.id && onEdit(row?.id);
+                    }}
+                  />
+                );
+              },
+            },
+            {
+              id: "delete",
+              name: "",
+              render: (row) => {
+                return (
+                  <DeleteIcon
+                    onClick={(e) => {
+                      e.preventDefault();
+                      showDialogBox(row.id);
+                    }}
+                  />
+                );
+              },
+            },
+          ],
+          paginationRequired: true,
+        }}
+        pageSize={10}
+      />
+      {isDialogOpen && (
+        <Modal
+          isDialogOpen={isDialogOpen}
+          component={
+            <>
+              Are you sure want to delete{" "}
+              <h5 style={{ display: "inline" }}>
+                {category?.find((cat) => cat?.id === selectedIdToDelete).name}
+              </h5>{" "}
+              ?
+            </>
+          }
+          dialogSize={"SMALL"}
+          onCloseAction={() => {
+            setIsDialogOpen(false);
+          }}
+          submitClick={() => {
+            deleteCategory();
+            setIsDialogOpen(false);
+            setSelectedIdToDelete("");
+          }}
+        />
+      )}
+    </>
+    // <Paper sx={{ width: "100%", overflow: "hidden" }}>
+    //   <Grid>
+    //     <h3>Categories</h3>
+    //     <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
+    //       <Table stickyHeader aria-label="sticky table">
+    //         <TableHead className={"table-header"}>
+    //           <TableRow>
+    //             {/* <TableCell>Id</TableCell> */}
+    //             <TableCell>Name</TableCell>
+    //             <TableCell></TableCell>
+    //             <TableCell></TableCell>
+    //           </TableRow>
+    //         </TableHead>
+    //         <TableBody>
+    //           {(category || []).map((row: ICategoryProps) => (
+    //             <TableRow
+    //               key={row.id}
+    //               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+    //             >
+    //               {/* <TableCell align="left">{row.id}</TableCell> */}
+    //               <TableCell align="left">
+    //                 <input
+    //                   key={row?.id}
+    //                   ref={inputRef}
+    //                   value={row.name}
+    //                   disabled={!row?.isEdit}
+    //                   onChange={(e) =>
+    //                     row?.id && onChangeHandler(row?.id, e.target?.value)
+    //                   }
+    //                   className="editCategoryInput"
+    //                   id={`edit-${row?.id}`}
+    //                   onBlur={(e) => {
+    //                     row?.id && saveEditedCategory(row?.id, e.target?.value);
+    //                   }}
+    //                 />
+    //               </TableCell>
+    //               <TableCell align="left">
+    //                 <DeleteIcon
+    //                   onClick={(e) => {
+    //                     e.preventDefault();
+    //                     showDialogBox(row.id);
+    //                   }}
+    //                 />
+    //               </TableCell>
+    //               <TableCell align="left">
+    //                 <EditIcon
+    //                   onClick={(e) => {
+    //                     row.id && onEdit(row?.id);
+    //                   }}
+    //                 />
+    //               </TableCell>
+    //             </TableRow>
+    //           ))}
+    //         </TableBody>
+    //       </Table>
+    //     </TableContainer>
+    //   </Grid>
+    // {isDialogOpen && (
+    //   <Modal
+    //     isDialogOpen={isDialogOpen}
+    //     component={
+    //       <>
+    //         Are you sure want to delete{" "}
+    //         <h5 style={{ display: "inline" }}>
+    //           {category?.find((cat) => cat?.id === selectedIdToDelete).name}
+    //         </h5>{" "}
+    //         ?
+    //       </>
+    //     }
+    //     dialogSize={"SMALL"}
+    //     onCloseAction={() => {
+    //       setIsDialogOpen(false);
+    //     }}
+    //     submitClick={() => {
+    //       deleteCategory();
+    //       setIsDialogOpen(false);
+    //       setSelectedIdToDelete("");
+    //     }}
+    //   />
+    // )}
+    // </Paper>
   );
 };
 
