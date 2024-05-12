@@ -2,7 +2,6 @@ import {
   Grid,
   TableContainer,
   Paper,
-  Table,
   TableHead,
   TableRow,
   TableCell,
@@ -19,6 +18,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import "./items.scss";
 import { TModes } from "./Items";
 import { Modal } from "../Modal";
+import { Table } from "@manish774/smarty-ui";
 
 const ItemsList = ({
   handleMode,
@@ -75,8 +75,98 @@ const ItemsList = ({
   };
 
   return (
-    <div>
-      <Paper sx={{ width: "100%", overflow: "hidden" }}>
+    <div style={{ width: "400px", overflow: "scroll" }}>
+      <>
+        <Table
+          records={state?.items}
+          pageSize={5}
+          config={{
+            title: "Items List",
+            paginationRequired: true,
+            columns: [
+              {
+                name: "name",
+                id: "name",
+                highLight: { color: "#FF5733" },
+                searchable: true,
+              },
+              {
+                name: "category",
+                id: "category",
+                render: (row) => <>{getCategoryName(row.category)}</>,
+                highLight: { color: "#FFDB58" },
+              },
+
+              {
+                name: "price",
+                id: "price",
+                highLight: { color: "#90EE90" },
+                searchable: true,
+              },
+              {
+                name: "date",
+                id: "date",
+                render: (row) => <>{formatDate(row?.date)}</>,
+              },
+              { name: "description", id: "description" },
+              {
+                name: "",
+                id: "",
+                render: (row) => (
+                  <EditIcon
+                    onClick={(e) => {
+                      e.preventDefault();
+                      row.id && onEdit(row?.id);
+                    }}
+                  />
+                ),
+              },
+              {
+                name: "",
+                id: "",
+                render: (row) => (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      showDialogBox(row.id);
+                    }}
+                  >
+                    <DeleteIcon />
+                  </button>
+                ),
+              },
+            ],
+          }}
+        />
+        {isDialogOpen && (
+          <Modal
+            isDialogOpen={isDialogOpen}
+            component={
+              <>
+                Are you sure want to delete{" "}
+                <h5 style={{ display: "inline" }}>
+                  {
+                    state?.items?.find((it) => it?.id === selectedIdToDelete)
+                      .name
+                  }
+                </h5>{" "}
+                ?
+              </>
+            }
+            dialogSize={"SMALL"}
+            onCloseAction={() => {
+              setIsDialogOpen(false);
+            }}
+            submitClick={() => {
+              deleteItem();
+              setIsDialogOpen(false);
+              setSelectedIdToDelete("");
+            }}
+          />
+        )}
+      </>
+
+      {/* <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <Grid>
           <h3>Items</h3>
           <div>
@@ -187,7 +277,30 @@ const ItemsList = ({
           </TableContainer>
           <h3>Total: {totalPrice}</h3>
         </Grid>
-      </Paper>
+      </Paper> */}
+      <br />
+      <Table
+        records={categoryData}
+        pageSize={10}
+        config={{
+          title: "Category wise",
+          paginationRequired: true,
+          columns: [
+            {
+              name: "Category",
+              id: "category",
+              render: (row) => <>{getCategoryName(row.category)}</>,
+              highLight: { color: "#FF5733" },
+            },
+            {
+              name: "price",
+              id: "price",
+              render: (row) => <>{row.price}</>,
+              highLight: { color: "#FF5733" },
+            },
+          ],
+        }}
+      />
     </div>
   );
 };

@@ -3,8 +3,6 @@ import ItemsList from "./ItemsList";
 import ItemsForm from "./ItemsForm";
 import { useRef, useState } from "react";
 import "./items.scss";
-import { Breadcrumbs, Badge, CircleBadge } from "@manish774/smarty-ui";
-
 export type TModes = "ADD" | "EDIT";
 const Items = () => {
   const [mode, setMode] = useState<TModes>("ADD");
@@ -27,9 +25,6 @@ const Items = () => {
   return (
     <>
       <Box component="form" noValidate sx={{ mt: 3 }} ref={scrollRef}>
-        <Breadcrumbs />
-        <Badge label="test" type={"bordered"} theme={"warning"} />
-        <CircleBadge labels={["test", "jhhjgj"]} />
         <Grid item xs={12} sm={12} className={"item-container"}>
           <ItemsForm
             mode={mode}

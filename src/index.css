@@ -47,6 +47,10 @@ body {
   color: var(--text-color);
   padding: 0;
   margin: 0;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  .input-container > [type="number"] {
+    width: 100px;
+  }
 }
 
 code {

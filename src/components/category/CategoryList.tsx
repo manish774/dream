@@ -87,7 +87,6 @@ const CategoryList = ({ refresh }: { refresh: () => any }) => {
   const onChangeHandler = (id: string, value: string) => {
     console.log(id);
     const enableEditModeForId = category?.map((m) => {
-      debugger;
       return m.id === id
         ? {
             ...m,
@@ -107,8 +106,8 @@ const CategoryList = ({ refresh }: { refresh: () => any }) => {
       type: "addCategory",
       payload: updatedCatagories,
     });
-    setCategory(updatedCatagories);
-    setRefreshToken((prev) => prev + 1);
+    // setCategory(updatedCatagories);
+    // setRefreshToken((prev) => prev + 1);
   };
 
   return (
@@ -122,6 +121,9 @@ const CategoryList = ({ refresh }: { refresh: () => any }) => {
               id: "name",
               name: "name",
               searchable: true,
+              highLight: {
+                color: "rebeccapurple",
+              },
               render: (row) => {
                 return (
                   <input
@@ -144,6 +146,9 @@ const CategoryList = ({ refresh }: { refresh: () => any }) => {
             {
               id: "edit",
               name: "",
+              highLight: {
+                color: "rebeccapurple",
+              },
               render: (row) => {
                 return (
                   <EditIcon
@@ -157,6 +162,9 @@ const CategoryList = ({ refresh }: { refresh: () => any }) => {
             {
               id: "delete",
               name: "",
+              highLight: {
+                color: "rebeccapurple",
+              },
               render: (row) => {
                 return (
                   <DeleteIcon
