@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/dream/static/css/main.0ba3de44.css",
-    "main.js": "/dream/static/js/main.effad04c.js",
+    "main.css": "/dream/static/css/main.956717ca.css",
+    "main.js": "/dream/static/js/main.a41794f6.js",
     "static/js/453.49834109.chunk.js": "/dream/static/js/453.49834109.chunk.js",
-    "static/media/Premium Vector _ Cute bride and groom cartoon for wedding invitation card template.jpg": "/dream/static/media/Premium Vector _ Cute bride and groom cartoon for wedding invitation card template.da24f65188bcca608713.jpg",
+    "static/media/img.jpg": "/dream/static/media/img.a274b390e51d796a6315.jpg",
     "index.html": "/dream/index.html",
-    "main.0ba3de44.css.map": "/dream/static/css/main.0ba3de44.css.map",
-    "main.effad04c.js.map": "/dream/static/js/main.effad04c.js.map",
+    "main.956717ca.css.map": "/dream/static/css/main.956717ca.css.map",
+    "main.a41794f6.js.map": "/dream/static/js/main.a41794f6.js.map",
     "453.49834109.chunk.js.map": "/dream/static/js/453.49834109.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.0ba3de44.css",
-    "static/js/main.effad04c.js"
+    "static/css/main.956717ca.css",
+    "static/js/main.a41794f6.js"
   ]
 }
