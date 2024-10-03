@@ -47,7 +47,8 @@ body {
   color: var(--text-color);
   padding: 0;
   margin: 0;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-family: "Cascadia Mono-SemiLight", Menlo, Monaco, Consolas, monospace !important;
+  font-weight: 500;
   .input-container > [type="number"] {
     width: 100px;
   }

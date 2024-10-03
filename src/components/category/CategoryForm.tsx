@@ -1,31 +1,42 @@
 import { Typography, Box, Grid, TextField, Button } from "@mui/material";
-import { addDoc } from "firebase/firestore";
-import React, { useState } from "react";
-import { categoryList } from "../Utils/Utils";
+import { addDoc, updateDoc } from "firebase/firestore";
+import React, { useEffect, useRef, useState } from "react";
+import { categoryDoc, categoryList } from "../Utils/Utils";
 import { ICategoryProps } from "../context/DataStateModels";
 import { useDataStateContext } from "../context/DataStateContext";
+import { IItemNCategoryFormProps } from "../Utils/Utils";
 
-const CategoryForm = ({ refresh }: { refresh: () => any }) => {
+const CategoryForm = ({
+  refresh,
+  mode,
+  id,
+  handleMode,
+}: {
+  refresh: () => any;
+} & IItemNCategoryFormProps) => {
   const { state, dispatch } = useDataStateContext();
   const [category, setCategory] = useState<ICategoryProps>();
-
   const [isButtonDisable, setIsButtonDisable] = useState(false);
+  const [refreshToken, setRefreshToken] = useState<number>(0);
+
   const addCategory = async () => {
-    setIsButtonDisable(true);
-    try {
-      await addDoc(categoryList, category);
-      category &&
-        dispatch({
-          type: "addCategory",
-          payload: [...state?.category, category],
-        });
-      setCategory({ name: "" });
-      dispatch({ type: "refresh", payload: state?.refreshToken + 1 });
-      refresh();
-    } catch (e) {
-      console.log(e);
+    if (category?.name) {
+      setIsButtonDisable(true);
+      try {
+        await addDoc(categoryList, category);
+        category &&
+          dispatch({
+            type: "addCategory",
+            payload: [...state?.category, category],
+          });
+        setCategory({ name: "" });
+        dispatch({ type: "refresh", payload: state?.refreshToken + 1 });
+        refresh();
+      } catch (e) {
+        console.log(e);
+      }
+      setIsButtonDisable(false);
     }
-    setIsButtonDisable(false);
   };
 
   const handleCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,8 +45,38 @@ const CategoryForm = ({ refresh }: { refresh: () => any }) => {
     });
   };
 
+  useEffect(() => {
+    if (mode === "EDIT" && id !== "") {
+      const { name } = state?.category?.find(
+        (cat) => cat?.id === id
+      ) as ICategoryProps;
+      setCategory({ name });
+    }
+  }, [mode, id, state]);
+
+  const updateCategory = () => {
+    if (id && mode === "EDIT") {
+      try {
+        updateDoc(categoryDoc(id), { name: category?.name });
+        const updatedCatagories = state?.category?.map((d) =>
+          d?.id === id
+            ? { ...d, name: category?.name, isEdit: false }
+            : { ...d }
+        );
+        dispatch({
+          type: "addCategory",
+          payload: updatedCatagories,
+        });
+        handleMode && handleMode("ADD", "");
+        setCategory({ name: "" });
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
+
   return (
-    <div>
+    <div style={{ padding: "10px" }}>
       <Typography component="h1" variant="h5">
         Add Category
       </Typography>
@@ -44,12 +85,12 @@ const CategoryForm = ({ refresh }: { refresh: () => any }) => {
           <Grid item xs={12} sm={12}>
             <TextField
               autoComplete="given-name"
-              name="category_name"
+              name="name"
               required
               fullWidth
-              value={category?.name}
-              id="category_name"
               label="category Name"
+              value={category?.name}
+              id="name"
               onChange={handleCategory}
             />
           </Grid>
@@ -60,10 +101,10 @@ const CategoryForm = ({ refresh }: { refresh: () => any }) => {
             disabled={isButtonDisable}
             onClick={(e) => {
               e.preventDefault();
-              addCategory();
+              mode === "ADD" ? addCategory() : updateCategory();
             }}
           >
-            Add
+            {mode === "ADD" ? "Add" : "Update"}
           </Button>
         </Grid>
       </Box>

@@ -3,7 +3,8 @@ import ItemsList from "./ItemsList";
 import ItemsForm from "./ItemsForm";
 import { useRef, useState } from "react";
 import "./items.scss";
-export type TModes = "ADD" | "EDIT";
+import { TModes } from "../Utils/Utils";
+
 const Items = () => {
   const [mode, setMode] = useState<TModes>("ADD");
   const [editId, setEditId] = useState("");
@@ -24,17 +25,17 @@ const Items = () => {
 
   return (
     <>
-      <Box component="form" noValidate sx={{ mt: 3 }} ref={scrollRef}>
-        <Grid item xs={12} sm={12} className={"item-container"}>
+      <Box component="form" noValidate sx={{ mt: 0 }} ref={scrollRef}>
+        <div className={"item-container"}>
           <ItemsForm
             mode={mode}
             id={mode === "EDIT" ? editId : ""}
             handleMode={handleEditMode}
           />
-        </Grid>
-        <Grid className={"item-table-container"}>
+        </div>
+        <div className={"item-table-container"}>
           <ItemsList handleMode={handleEditMode} />
-        </Grid>
+        </div>
       </Box>
     </>
   );

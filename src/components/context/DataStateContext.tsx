@@ -7,6 +7,7 @@ export const initialNav = [];
 export const defaultValue: IData = {
   category: [],
   items: [],
+  loading: { items: false, category: false },
   isLoggedIn: false,
   refreshToken: 0,
 };
@@ -32,6 +33,14 @@ export const dataReducer = (state: IData, action: AppAction) => {
       return {
         ...state,
         refreshToken: action.payload,
+      };
+    case "loading":
+      return {
+        ...state,
+        loading: {
+          ...state.loading,
+          [action.payload?.type]: action.payload.status,
+        },
       };
     default:
       return state;

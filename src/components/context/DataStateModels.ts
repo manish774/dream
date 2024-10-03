@@ -7,11 +7,18 @@ export type ICategoryProps = {
   oldValue?: string;
 };
 
+export interface ChildrenProps {
+  category: string;
+  price: string | number;
+  name: string;
+}
 export type IItems = ICategoryProps & {
   price: number | string;
   description: string;
   category: string;
   date: string;
+  children?: ChildrenProps[];
+  revisit: string;
 };
 
 export interface IData {
@@ -19,8 +26,10 @@ export interface IData {
   items: IItems[];
   isLoggedIn: boolean;
   refreshToken?: number;
+  loading: { items: boolean; category: boolean };
 }
 
+export type IType = { type: "category" | "items"; status: boolean };
 export type AppAction =
   | { type: "addCategory"; payload: ICategoryProps[] | [] }
   | {
@@ -34,6 +43,10 @@ export type AppAction =
   | {
       type: "refresh";
       payload: number;
+    }
+  | {
+      type: "loading";
+      payload: IType;
     };
 
 export interface AppContextType {
