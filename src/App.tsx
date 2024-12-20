@@ -3,10 +3,11 @@ import "./App.css";
 
 import Category from "./components/category/Category";
 import Header from "./components/Header";
-import { Tab, Tabs, Box } from "@mui/material";
+import { Tab, Tabs, Box, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import Items from "./components/Items/Items";
 import { useDataStateContext } from "./components/context/DataStateContext";
 import { Input, XFileReader } from "@manish774/smarty-ui";
+import { useFireBase } from "./context/FirebaseConfigContext";
 
 function App() {
   const [value, setValue] = useState(0);
@@ -17,6 +18,8 @@ function App() {
     validate2: 0,
     validate3: 10,
   });
+  const [alignment, setAlignment] = useState("manish");
+  const { state: firebaseUser, dispatch: firebaseDispatch } = useFireBase();
 
   const handleChange = (event: any, newValue: any) => {
     setValue(newValue);
@@ -49,6 +52,16 @@ function App() {
     setValidatePoints({ validate1: 0, validate2: 0, validate3: 0 });
   };
 
+  const handleToggle = (
+    event: React.MouseEvent<HTMLElement>,
+    newAlignment: string
+  ) => {
+    newAlignment && setAlignment(newAlignment);
+    newAlignment &&
+      firebaseDispatch({ type: "changeId", payload: newAlignment });
+  };
+
+  const myUsers = ["manish", "priya"];
   return !state?.isLoggedIn ? (
     <>
       {validated ? (
@@ -78,6 +91,19 @@ function App() {
       ) : (
         <div className="auth-container-inp">
           <div className="con">
+            <ToggleButtonGroup
+              color="primary"
+              value={alignment}
+              exclusive
+              onChange={handleToggle}
+              aria-label="Platform"
+            >
+              {myUsers.map((x) => (
+                <ToggleButton value={x} style={{ color: "white" }}>
+                  {x}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
             <button
               className="val"
               onClick={(e) => {

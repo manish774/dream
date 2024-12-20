@@ -10,6 +10,8 @@ import "./Category.scss";
 import { Modal } from "../Modal";
 
 import { Table } from "@manish774/smarty-ui";
+import { useFireBase } from "../../context/FirebaseConfigContext";
+import { getFirebaseServices } from "../../Firebase/config";
 
 const CategoryList = ({
   refresh,
@@ -22,10 +24,11 @@ const CategoryList = ({
   const [category, setCategory] = useState<ICategoryProps[]>([]);
   const [selectedIdToDelete, setSelectedIdToDelete] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-
+  const { state: firebaseState } = useFireBase();
+  const db = getFirebaseServices(firebaseState.userId).db;
   const deleteCategory = async () => {
     if (selectedIdToDelete) {
-      await deleteDoc(categoryDoc(selectedIdToDelete));
+      await deleteDoc(categoryDoc(selectedIdToDelete, db));
       dispatch({
         type: "addCategory",
         payload: category?.filter((d) => d?.id !== selectedIdToDelete),
@@ -42,7 +45,7 @@ const CategoryList = ({
   useEffect(() => {
     const getCategory = async () => {
       try {
-        const data = await getDocs(categoryList);
+        const data = await getDocs(categoryList(db));
         const categoryData = data?.docs?.map((doc) => ({
           ...doc.data(),
           id: doc.id,

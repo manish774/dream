@@ -5,6 +5,8 @@ import { categoryDoc, categoryList } from "../Utils/Utils";
 import { ICategoryProps } from "../context/DataStateModels";
 import { useDataStateContext } from "../context/DataStateContext";
 import { IItemNCategoryFormProps } from "../Utils/Utils";
+import { getFirebaseServices } from "../../Firebase/config";
+import { useFireBase } from "../../context/FirebaseConfigContext";
 
 const CategoryForm = ({
   refresh,
@@ -18,12 +20,16 @@ const CategoryForm = ({
   const [category, setCategory] = useState<ICategoryProps>();
   const [isButtonDisable, setIsButtonDisable] = useState(false);
   const [refreshToken, setRefreshToken] = useState<number>(0);
+  const { state: firebaseState } = useFireBase();
 
+  const db = getFirebaseServices(firebaseState.userId).db;
+
+  console.log(firebaseState.userId, "jhjgjghj");
   const addCategory = async () => {
     if (category?.name) {
       setIsButtonDisable(true);
       try {
-        await addDoc(categoryList, category);
+        await addDoc(categoryList(db), category);
         category &&
           dispatch({
             type: "addCategory",
@@ -57,7 +63,7 @@ const CategoryForm = ({
   const updateCategory = () => {
     if (id && mode === "EDIT") {
       try {
-        updateDoc(categoryDoc(id), { name: category?.name });
+        updateDoc(categoryDoc(id, db), { name: category?.name });
         const updatedCatagories = state?.category?.map((d) =>
           d?.id === id
             ? { ...d, name: category?.name, isEdit: false }

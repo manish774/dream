@@ -17,9 +17,10 @@ import {
   query,
   updateDoc,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IItems } from "../context/DataStateModels";
-import { db } from "../../Firebase/config";
+// import { db } from "../../Firebase/config";
+import { getFirebaseServices } from "../../Firebase/config";
 import { useDataStateContext } from "../context/DataStateContext";
 import {
   IItemNCategoryFormProps,
@@ -30,13 +31,14 @@ import {
 import { Skeleton, XFileReader } from "@manish774/smarty-ui";
 import UploadIcon from "@mui/icons-material/Upload";
 import RefreshIcon from "@mui/icons-material/Refresh";
-const categoryList = collection(db, "category");
+import { useFireBase } from "../../context/FirebaseConfigContext";
 
 const ItemsForm = ({ mode, id, handleMode }: IItemNCategoryFormProps) => {
   const { dispatch, state } = useDataStateContext();
   const [refreshToken, setRefreshToken] = useState<number>(0);
   const [isFormValid, setIsFormValid] = useState(false);
-
+  const { state: firebaseState } = useFireBase();
+  // const getFirebaseServices()
   const defaultDateTime = () => {
     const now = new Date();
     const year = now.getFullYear();
@@ -46,7 +48,13 @@ const ItemsForm = ({ mode, id, handleMode }: IItemNCategoryFormProps) => {
     const minutes = now.getMinutes().toString().padStart(2, "0");
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
+  const db = getFirebaseServices(firebaseState.userId).db;
+  const categoryList = useMemo(
+    () => collection(db, "category"),
+    [firebaseState]
+  );
 
+  console.log(firebaseState);
   const initData = {
     name: "",
     description: "",
@@ -57,12 +65,12 @@ const ItemsForm = ({ mode, id, handleMode }: IItemNCategoryFormProps) => {
   };
 
   const [item, setItem] = useState<IItems>(initData);
-  console.log(mode, id);
+
   const addItem = async () => {
     setIsFormValid(false);
     try {
-      const adding = await addDoc(itemList, item);
-      console.log(adding.id);
+      const adding = await addDoc(itemList(db), item);
+
       setItem(initData);
       setRefreshToken((prev) => prev + 1);
     } catch (e) {
@@ -106,7 +114,9 @@ const ItemsForm = ({ mode, id, handleMode }: IItemNCategoryFormProps) => {
     dispatch({ type: "loading", payload: { type: "items", status: true } });
     const getItems = async () => {
       try {
-        const data = await getDocs(query(itemList, orderBy("date", "desc")));
+        const data = await getDocs(
+          query(itemList(db), orderBy("date", "desc"))
+        );
         const itemData: any = data?.docs?.map((doc) => ({
           ...doc?.data(),
           id: doc?.id,
@@ -145,7 +155,7 @@ const ItemsForm = ({ mode, id, handleMode }: IItemNCategoryFormProps) => {
   const updateItem = () => {
     if (id && mode === "EDIT") {
       try {
-        updateDoc(itemDoc(id), { ...item });
+        updateDoc(itemDoc(id, db), { ...item });
 
         const updatedItems = state?.items?.map((d) =>
           d?.id === id ? { ...item } : { ...d }

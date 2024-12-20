@@ -3,12 +3,14 @@ import { IItems } from "../context/DataStateModels";
 import { useDataStateContext } from "../context/DataStateContext";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { deleteDoc, doc } from "firebase/firestore";
-import { db } from "../../Firebase/config";
+
+import { getFirebaseServices } from "../../Firebase/config";
 import EditIcon from "@mui/icons-material/Edit";
 import "./items.scss";
 import { Modal } from "../Modal";
 import { Badge, Table, Tree } from "@manish774/smarty-ui";
 import { TModes } from "../Utils/Utils";
+import { useFireBase } from "../../context/FirebaseConfigContext";
 
 const ItemsList = ({
   handleMode,
@@ -21,6 +23,7 @@ const ItemsList = ({
   const [selectedIdToDelete, setSelectedIdToDelete] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const isItemsLoading = state?.loading?.items;
+  const { state: firebaseState } = useFireBase();
   useEffect(() => {
     const calculatePrice = state?.items?.reduce(
       (acc, curr) => acc + parseFloat(String(curr.price) || "0"),
@@ -43,7 +46,11 @@ const ItemsList = ({
     ).toLocaleTimeString()}`;
 
   const deleteItem = async () => {
-    const itemDoc = doc(db, "Items", selectedIdToDelete);
+    const itemDoc = doc(
+      getFirebaseServices(firebaseState.userId).db,
+      "Items",
+      selectedIdToDelete
+    );
     await deleteDoc(itemDoc);
     dispatch({
       type: "addItems",
@@ -78,7 +85,6 @@ const ItemsList = ({
           children: [...acc[index].children, { ...curr, category: curr?.name }],
         };
       } else {
-        console.log(getCategoryName(curr.category), "curr");
         acc.push({
           ...curr,
           category: curr.category,
@@ -92,7 +98,6 @@ const ItemsList = ({
     }, []);
   };
 
-  console.log(state.items);
   const columnsToBeShown = [
     {
       name: "Name",

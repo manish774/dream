@@ -6,6 +6,8 @@ import { getDocs } from "firebase/firestore";
 import { useDataStateContext } from "../context/DataStateContext";
 import { categoryList, TModes } from "../Utils/Utils";
 import CategoryForm from "./CategoryForm";
+import { useFireBase } from "../../context/FirebaseConfigContext";
+import { getFirebaseServices } from "../../Firebase/config";
 
 const Category = () => {
   const { dispatch, state } = useDataStateContext();
@@ -13,9 +15,11 @@ const Category = () => {
   const [editId, setEditId] = useState("");
   const [mode, setMode] = useState<TModes>("ADD");
 
+  const { state: firebaseState } = useFireBase();
+  const db = getFirebaseServices(firebaseState.userId).db;
+
   const refresh = () => {
     setRefreshToken((prev) => prev + 1);
-    console.log(refreshToken, "dddddd");
   };
 
   const handleEditMode = (newMode: TModes, id: string) => {
@@ -35,7 +39,7 @@ const Category = () => {
   useEffect(() => {
     const getCategory = async () => {
       try {
-        const data = await getDocs(categoryList);
+        const data = await getDocs(categoryList(db));
         const categoryData: any = data?.docs?.map((doc) => {
           return { ...doc.data(), id: doc.id };
         });
