@@ -22,7 +22,13 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  getFirestore,
+  updateDoc,
+} from "firebase/firestore";
 interface FirebaseConfig {
   apiKey: string;
   authDomain: string;
@@ -52,8 +58,18 @@ const firebaseConfigs: Record<string, FirebaseConfig> = {
     appId: "1:674773976291:web:1eb2f3957c5568160f31d6",
     measurementId: "G-2NHC9CBNR2",
   },
+  udupi: {
+    apiKey: "AIzaSyCohE_EzDtV5n3znDGBy3G3UDjmJOiiPtY",
+    authDomain: "udupiexpense.firebaseapp.com",
+    projectId: "udupiexpense",
+    storageBucket: "udupiexpense.firebasestorage.app",
+    messagingSenderId: "106708082420",
+    appId: "1:106708082420:web:f8917e7dbf9dafa98bc8a1",
+    measurementId: "G-JTWN2E7KH1",
+  },
 };
 
+export const firebaseUsers = Object.keys(firebaseConfigs);
 // Store initialized apps
 const firebaseInstances: Record<string, any> = {};
 
@@ -86,3 +102,31 @@ export const getFirebaseServices = (
     db: getFirestore(app),
   };
 };
+
+export const addAttributeToCollection = async (
+  projectKey: keyof typeof firebaseConfigs = "manish",
+  collectionName: string,
+  attributeName: string,
+  attributeValue: any
+) => {
+  try {
+    const { db } = getFirebaseServices(projectKey);
+    const colRef = collection(db, collectionName);
+    const snapshot = await getDocs(colRef);
+
+    const updatePromises = snapshot.docs.map((docSnap) => {
+      const docRef = doc(db, collectionName, docSnap.id);
+      return updateDoc(docRef, { [attributeName]: attributeValue });
+    });
+
+    await Promise.all(updatePromises);
+    console.log(
+      `Attribute '${attributeName}' added to all documents in '${collectionName}' collection.`
+    );
+  } catch (error) {
+    console.error("Error adding attribute to collection:", error);
+  }
+};
+
+// Example usage
+// addAttributeToCollection("priya", "Items", "pmode", "PhonePe");

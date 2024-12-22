@@ -11,6 +11,7 @@ import { Modal } from "../Modal";
 import { Badge, Table, Tree } from "@manish774/smarty-ui";
 import { TModes } from "../Utils/Utils";
 import { useFireBase } from "../../context/FirebaseConfigContext";
+import { render } from "@testing-library/react";
 
 const ItemsList = ({
   handleMode,
@@ -24,6 +25,7 @@ const ItemsList = ({
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const isItemsLoading = state?.loading?.items;
   const { state: firebaseState } = useFireBase();
+
   useEffect(() => {
     const calculatePrice = state?.items?.reduce(
       (acc, curr) => acc + parseFloat(String(curr.price) || "0"),
@@ -138,6 +140,11 @@ const ItemsList = ({
       ),
     },
     { name: "description", id: "description", searchable: true },
+    {
+      name: "pmode",
+      id: "pmode",
+      searchable: true,
+    },
     {
       name: "",
       id: "",

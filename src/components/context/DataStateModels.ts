@@ -19,6 +19,7 @@ export type IItems = ICategoryProps & {
   date: string;
   children?: ChildrenProps[];
   revisit: string;
+  pmode: string;
 };
 
 export interface IData {

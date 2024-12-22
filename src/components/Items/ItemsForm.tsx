@@ -62,6 +62,7 @@ const ItemsForm = ({ mode, id, handleMode }: IItemNCategoryFormProps) => {
     category: "",
     date: defaultDateTime(),
     revisit: "No",
+    pmode: "PhonePe",
   };
 
   const [item, setItem] = useState<IItems>(initData);
@@ -146,9 +147,9 @@ const ItemsForm = ({ mode, id, handleMode }: IItemNCategoryFormProps) => {
 
   useEffect(() => {
     if (mode === "EDIT" && id !== "") {
-      const { category, price, description, name, date, revisit } =
+      const { category, price, description, name, date, revisit, pmode } =
         state?.items?.find((item) => item?.id === id) as IItems;
-      setItem({ category, price, description, name, date, revisit });
+      setItem({ category, price, description, name, date, revisit, pmode });
     }
   }, [mode, id, state]);
 
@@ -192,22 +193,19 @@ const ItemsForm = ({ mode, id, handleMode }: IItemNCategoryFormProps) => {
         >
           <RefreshIcon />
         </button>
-
-        {/* <UploadIcon /> */}
-        {/* <XFileReader contentCallback={handleExelFileUpload} /> */}
       </div>
       <Box component="form" noValidate sx={{ mt: 3 }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={12}>
+          {/* Category */}
+          <Grid item xs={12}>
             {!isCategoryLoading ? (
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">
+                <InputLabel id="category-select-label">
                   {isCategoryLoading ? "Loading..." : "Category"}
                 </InputLabel>
-
                 <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
+                  labelId="category-select-label"
+                  id="category-select"
                   value={item?.category}
                   label="Category"
                   name="category"
@@ -224,7 +222,9 @@ const ItemsForm = ({ mode, id, handleMode }: IItemNCategoryFormProps) => {
               <Skeleton type={"line"} style={{ height: "53px" }} />
             )}
           </Grid>
-          <Grid item xs={12} sm={12}>
+
+          {/* Item Name */}
+          <Grid item xs={12}>
             {!isCategoryLoading ? (
               <TextField
                 autoComplete="given-name"
@@ -240,44 +240,52 @@ const ItemsForm = ({ mode, id, handleMode }: IItemNCategoryFormProps) => {
               <Skeleton type={"line"} style={{ height: "53px" }} />
             )}
           </Grid>
-          <Grid item xs={12} sm={12}>
-            {!isCategoryLoading ? (
-              <TextField
-                autoComplete="given-name"
-                name="price"
-                required
-                fullWidth
-                id="price"
-                type="number"
-                label="Item Price"
-                value={item?.price}
-                onChange={handleItems}
-              />
-            ) : (
-              <Skeleton type={"line"} style={{ height: "53px" }} />
-            )}
+
+          {/* Item Price */}
+          <Grid container item xs={12} spacing={2}>
+            <Grid item xs={6}>
+              {!isCategoryLoading ? (
+                <TextField
+                  autoComplete="given-name"
+                  name="price"
+                  required
+                  fullWidth
+                  id="price"
+                  type="number"
+                  label="Item Price"
+                  value={item?.price}
+                  onChange={handleItems}
+                />
+              ) : (
+                <Skeleton type={"line"} style={{ height: "53px" }} />
+              )}
+            </Grid>
+
+            {/* Date */}
+            <Grid item xs={6}>
+              {!isCategoryLoading ? (
+                <TextField
+                  autoComplete="given-name"
+                  name="date"
+                  required
+                  fullWidth
+                  id="date"
+                  type="datetime-local"
+                  label="Date"
+                  value={item?.date}
+                  onChange={handleItems}
+                />
+              ) : (
+                <Skeleton type={"line"} style={{ height: "53px" }} />
+              )}
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={12}>
-            {!isCategoryLoading ? (
-              <TextField
-                autoComplete="given-name"
-                name="date"
-                required
-                fullWidth
-                id="date"
-                type="datetime-local"
-                label="Date"
-                value={item?.date}
-                onChange={handleItems}
-              />
-            ) : (
-              <Skeleton type={"line"} style={{ height: "53px" }} />
-            )}
-          </Grid>
-          <Grid item xs={12} sm={12}>
+
+          {/* Description */}
+          <Grid item xs={12}>
             {!isCategoryLoading ? (
               <TextareaAutosize
-                minRows={2}
+                minRows={3}
                 name="description"
                 onChange={handleItems}
                 aria-label="Item Description"
@@ -289,35 +297,74 @@ const ItemsForm = ({ mode, id, handleMode }: IItemNCategoryFormProps) => {
               <Skeleton type={"line"} style={{ height: "53px" }} />
             )}
           </Grid>
-          <Grid item xs={12} sm={12}>
-            <FormControl fullWidth>
-              {!isCategoryLoading ? (
-                <>
-                  <InputLabel id="demo-simple-select-label">
-                    {"Revisit required?"}
-                  </InputLabel>
 
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={item.revisit || initData?.revisit}
-                    label="Revisit"
-                    name="revisit"
-                    onChange={handleItems}
-                  >
-                    {["No", "Yes"]?.map((cat) => (
-                      <MenuItem key={cat} value={cat}>
-                        {cat}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </>
-              ) : (
-                <Skeleton type={"line"} style={{ height: "53px" }} />
-              )}
-            </FormControl>
+          {/* Revisit and Payment Mode */}
+          <Grid container item xs={12} spacing={2}>
+            <Grid item xs={6} sm={6}>
+              <FormControl fullWidth>
+                {!isCategoryLoading ? (
+                  <>
+                    <InputLabel id="revisit-select-label">
+                      {"Revisit required?"}
+                    </InputLabel>
+                    <Select
+                      labelId="revisit-select-label"
+                      id="revisit-select"
+                      value={item.revisit || initData?.revisit}
+                      label="Revisit"
+                      name="revisit"
+                      onChange={handleItems}
+                    >
+                      {["No", "Yes"]?.map((cat) => (
+                        <MenuItem key={cat} value={cat}>
+                          {cat}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </>
+                ) : (
+                  <Skeleton type={"line"} style={{ height: "53px" }} />
+                )}
+              </FormControl>
+            </Grid>
+            <Grid item xs={6} sm={6}>
+              <FormControl fullWidth>
+                {!isCategoryLoading ? (
+                  <>
+                    <InputLabel id="pmode-select-label">
+                      {"Payment mode"}
+                    </InputLabel>
+                    <Select
+                      labelId="pmode-select-label"
+                      id="pmode-select"
+                      value={item.pmode || initData?.pmode}
+                      label="pmode"
+                      name="pmode"
+                      onChange={handleItems}
+                    >
+                      {[
+                        "Cash",
+                        "PhonePe",
+                        "Gpay",
+                        "Credit card",
+                        "Debit card",
+                        "Paytm",
+                      ]?.map((cat) => (
+                        <MenuItem key={cat} value={cat}>
+                          {cat}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </>
+                ) : (
+                  <Skeleton type={"line"} style={{ height: "53px" }} />
+                )}
+              </FormControl>
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={12}>
+
+          {/* Add/Update Button */}
+          <Grid item xs={12}>
             <button
               className={"add-item-btn"}
               onClick={(e) => {
