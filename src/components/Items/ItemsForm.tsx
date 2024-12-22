@@ -54,7 +54,6 @@ const ItemsForm = ({ mode, id, handleMode }: IItemNCategoryFormProps) => {
     [firebaseState]
   );
 
-  console.log(firebaseState);
   const initData = {
     name: "",
     description: "",

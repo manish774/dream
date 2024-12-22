@@ -53,7 +53,6 @@ const CategoryList = ({
           oldValue: doc.data().name,
         }));
         setCategory(categoryData as ICategoryProps[]);
-        console.log(categoryData);
       } catch (e) {
         console.log(e);
       }

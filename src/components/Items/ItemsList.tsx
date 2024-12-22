@@ -141,7 +141,7 @@ const ItemsList = ({
     },
     { name: "description", id: "description", searchable: true },
     {
-      name: "pmode",
+      name: "Payment mode",
       id: "pmode",
       searchable: true,
     },

@@ -120,9 +120,6 @@ export const addAttributeToCollection = async (
     });
 
     await Promise.all(updatePromises);
-    console.log(
-      `Attribute '${attributeName}' added to all documents in '${collectionName}' collection.`
-    );
   } catch (error) {
     console.error("Error adding attribute to collection:", error);
   }

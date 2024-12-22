@@ -135,7 +135,12 @@ function App() {
             exclusive
             onChange={handleToggle}
             aria-label="Platform"
-            style={{ position: "absolute", bottom: 0, left: "25%", zIndex: 99 }}
+            style={{
+              position: "absolute",
+              bottom: 20,
+              left: "25%",
+              zIndex: 99,
+            }}
           >
             {myUsers.map((x) => (
               <ToggleButton
