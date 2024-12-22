@@ -8,16 +8,45 @@ import Items from "./components/Items/Items";
 import { useDataStateContext } from "./components/context/DataStateContext";
 import { Input, XFileReader } from "@manish774/smarty-ui";
 import { useFireBase } from "./context/FirebaseConfigContext";
-
+import ShutdownIcon from "@mui/icons-material/PowerSettingsNew";
+interface ImyUserCoonnfig {
+  [key: string]: {
+    left: number;
+    right: number;
+    scroll: number;
+  };
+}
 function App() {
   const [value, setValue] = useState(0);
   const { state } = useDataStateContext();
   const [validated, setValidated] = useState(false);
+  const { state: firebaseState } = useFireBase();
   const [validatePoints, setValidatePoints] = useState<Record<string, any>>({
-    validate1: 0,
-    validate2: 0,
-    validate3: 10,
+    left: 0,
+    right: 0,
+    scroll: 10,
   });
+
+  const myUserConfig: ImyUserCoonnfig = {
+    manish: {
+      left: 1,
+      right: 2,
+      scroll: 77,
+    },
+    priya: {
+      left: 2,
+      right: 1,
+      scroll: 70,
+    },
+    udupi: {
+      left: 0,
+      right: 0,
+      scroll: 70,
+    },
+  };
+
+  const myUsers = Object.keys(myUserConfig);
+  const currentUser = firebaseState.userId;
   const [alignment, setAlignment] = useState("manish");
   const { state: firebaseUser, dispatch: firebaseDispatch } = useFireBase();
 
@@ -31,25 +60,26 @@ function App() {
       [vp]: parseInt(validatePoints[vp]) + 1,
     }));
   };
+
   const handleSidler = (e: React.ChangeEvent<HTMLInputElement>) => {
     e &&
       setValidatePoints((prev) => ({
         ...prev,
-        validate3: parseInt(e.target.value),
+        scroll: parseInt(e.target.value),
       }));
   };
   useEffect(() => {
     if (
-      validatePoints.validate1 === 2 &&
-      validatePoints.validate2 === 1 &&
-      validatePoints.validate3 > 90
+      validatePoints.left === myUserConfig[currentUser].left &&
+      validatePoints.right === myUserConfig[currentUser].right &&
+      validatePoints.scroll === myUserConfig[currentUser].scroll
     ) {
       setValidated(true);
     }
   }, [validatePoints]);
 
   const resetValidate = () => {
-    setValidatePoints({ validate1: 0, validate2: 0, validate3: 0 });
+    setValidatePoints({ left: 0, right: 0, scroll: 0 });
   };
 
   const handleToggle = (
@@ -61,11 +91,20 @@ function App() {
       firebaseDispatch({ type: "changeId", payload: newAlignment });
   };
 
-  const myUsers = ["manish", "priya"];
   return !state?.isLoggedIn ? (
     <>
       {validated ? (
         <>
+          <button
+            className="right-item"
+            onClick={(e) => {
+              e.preventDefault();
+              window.location.reload();
+            }}
+            style={{ position: "absolute", right: 0, zIndex: 9999 }}
+          >
+            <ShutdownIcon />
+          </button>
           <Tabs
             value={value}
             onChange={handleChange}
@@ -90,30 +129,38 @@ function App() {
         </>
       ) : (
         <div className="auth-container-inp">
+          <ToggleButtonGroup
+            color="secondary"
+            value={alignment}
+            exclusive
+            onChange={handleToggle}
+            aria-label="Platform"
+            style={{ position: "absolute", bottom: 0, left: "25%", zIndex: 99 }}
+          >
+            {myUsers.map((x) => (
+              <ToggleButton
+                value={x}
+                style={{
+                  color: alignment === x ? "#fff" : "#ccc", // White text for selected, lighter for unselected
+                  backgroundColor: alignment === x ? "#555" : "transparent", // Dark background for selected
+                  border: "1px solid #777", // Add subtle border for buttons
+                }}
+              >
+                {x}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
           <div className="con">
-            <ToggleButtonGroup
-              color="primary"
-              value={alignment}
-              exclusive
-              onChange={handleToggle}
-              aria-label="Platform"
-            >
-              {myUsers.map((x) => (
-                <ToggleButton value={x} style={{ color: "white" }}>
-                  {x}
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
             <button
               className="val"
               onClick={(e) => {
-                handleValidate("validate1");
+                handleValidate("left");
               }}
             ></button>
             <button
               className="val"
               onClick={(e) => {
-                handleValidate("validate2");
+                handleValidate("right");
               }}
             ></button>
             <button
@@ -126,10 +173,11 @@ function App() {
               <input
                 onChange={handleSidler}
                 type={"range"}
-                value={`${validatePoints.validate3}`}
+                value={`${validatePoints.scroll}`}
                 // debounceTime={1}
                 className="my-slider-face"
               />
+              <>{validatePoints.scroll}</>
             </div>
           </div>
         </div>
