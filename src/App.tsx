@@ -6,101 +6,75 @@ import Header from "./components/Header";
 import { Tab, Tabs, Box, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import Items from "./components/Items/Items";
 import { useDataStateContext } from "./components/context/DataStateContext";
-import { Input, XFileReader } from "@manish774/smarty-ui";
 import { useFireBase } from "./context/FirebaseConfigContext";
 import ShutdownIcon from "@mui/icons-material/PowerSettingsNew";
-interface ImyUserCoonnfig {
-  [key: string]: {
-    left: number;
-    right: number;
-    scroll: number;
-  };
-}
+import Auth from "./components/Auth/Auth";
+
 function App() {
   const [value, setValue] = useState(0);
   const { state } = useDataStateContext();
-  const [validated, setValidated] = useState(false);
-  const { state: firebaseState } = useFireBase();
-  const [validatePoints, setValidatePoints] = useState<Record<string, any>>({
-    left: 0,
-    right: 0,
-    scroll: 10,
-  });
+  const { state: firebaseState, dispatch: firebaseDispatch } = useFireBase();
 
-  const myUserConfig: ImyUserCoonnfig = {
-    manish: {
-      left: 1,
-      right: 2,
-      scroll: 77,
-    },
-    priya: {
-      left: 2,
-      right: 1,
-      scroll: 70,
-    },
-    udupi: {
-      left: 0,
-      right: 0,
-      scroll: 70,
-    },
+  const myUserConfig = {
+    manish: [
+      { defaultValue: 10, valid: 100 },
+      { defaultValue: 0, valid: 100 },
+      { defaultValue: 0, valid: 100 },
+    ],
+    priya: [
+      { defaultValue: 0, valid: 100 },
+      { defaultValue: 0, valid: 100 },
+    ],
+    udupi: [{ defaultValue: 0, valid: 50 }],
   };
 
   const myUsers = Object.keys(myUserConfig);
-  const currentUser = firebaseState.userId;
-  const [alignment, setAlignment] = useState("manish");
-  const { state: firebaseUser, dispatch: firebaseDispatch } = useFireBase();
+  const [alignment, setAlignment] = useState(firebaseState.userId || "manish");
 
-  const handleChange = (event: any, newValue: any) => {
-    setValue(newValue);
-  };
+  const [validityState, setValidityState] = useState<{
+    [index: number]: boolean;
+  }>({});
 
-  const handleValidate = (vp) => {
-    setValidatePoints((prev) => ({
-      ...validatePoints,
-      [vp]: parseInt(validatePoints[vp]) + 1,
-    }));
-  };
-
-  const handleSidler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e &&
-      setValidatePoints((prev) => ({
-        ...prev,
-        scroll: parseInt(e.target.value),
-      }));
-  };
+  // Reset validityState when the user changes
   useEffect(() => {
-    if (
-      validatePoints.left === myUserConfig[currentUser].left &&
-      validatePoints.right === myUserConfig[currentUser].right &&
-      validatePoints.scroll === myUserConfig[currentUser].scroll
-    ) {
-      setValidated(true);
-    }
-  }, [validatePoints]);
+    const initialValidityState = myUserConfig[alignment]?.reduce(
+      (acc, _, index) => ({ ...acc, [index]: false }),
+      {}
+    );
+    setValidityState(initialValidityState || {});
+  }, [alignment]);
 
-  const resetValidate = () => {
-    setValidatePoints({ left: 0, right: 0, scroll: 0 });
+  const handleChange = (event: any, newValue: number) => {
+    setValue(newValue);
   };
 
   const handleToggle = (
     event: React.MouseEvent<HTMLElement>,
-    newAlignment: string
+    newAlignment: string | null
   ) => {
-    newAlignment && setAlignment(newAlignment);
-    newAlignment &&
+    if (newAlignment) {
+      setAlignment(newAlignment);
       firebaseDispatch({ type: "changeId", payload: newAlignment });
+    }
   };
 
+  const handleOnChange = (isValid: boolean, index: number) => {
+    console.log(isValid, index);
+    setValidityState((prev) => ({
+      ...prev,
+      [index]: isValid,
+    }));
+  };
+
+  const allValid = Object.values(validityState).every((isValid) => isValid);
+  console.log(validityState, myUserConfig[alignment]);
   return !state?.isLoggedIn ? (
-    <>
-      {validated ? (
+    <div>
+      {allValid ? (
         <>
           <button
             className="right-item"
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.reload();
-            }}
+            onClick={() => window.location.reload()}
             style={{ position: "absolute", right: 0, zIndex: 9999 }}
           >
             <ShutdownIcon />
@@ -114,18 +88,16 @@ function App() {
             <Tab label="Items" />
             <Tab label="Category" />
           </Tabs>
-          <>
-            {value === 0 && (
-              <TabPanel value={value} index={0}>
-                <Items />
-              </TabPanel>
-            )}
-            {value === 1 && (
-              <TabPanel value={value} index={1}>
-                <Category />
-              </TabPanel>
-            )}
-          </>
+          {value === 0 && (
+            <TabPanel value={value} index={0}>
+              <Items />
+            </TabPanel>
+          )}
+          {value === 1 && (
+            <TabPanel value={value} index={1}>
+              <Category />
+            </TabPanel>
+          )}
         </>
       ) : (
         <div className="auth-container-inp">
@@ -134,7 +106,7 @@ function App() {
             value={alignment}
             exclusive
             onChange={handleToggle}
-            aria-label="Platform"
+            aria-label="User Selection"
             style={{
               position: "absolute",
               bottom: 20,
@@ -142,52 +114,37 @@ function App() {
               zIndex: 99,
             }}
           >
-            {myUsers.map((x) => (
+            {myUsers.map((user) => (
               <ToggleButton
-                value={x}
+                key={user}
+                value={user}
                 style={{
-                  color: alignment === x ? "#fff" : "#ccc", // White text for selected, lighter for unselected
-                  backgroundColor: alignment === x ? "#555" : "transparent", // Dark background for selected
-                  border: "1px solid #777", // Add subtle border for buttons
+                  color: alignment === user ? "#fff" : "#ccc",
+                  backgroundColor: alignment === user ? "#555" : "transparent",
+                  border: "1px solid #777",
                 }}
+                aria-label={`Select user ${user}`}
               >
-                {x}
+                {user}
               </ToggleButton>
             ))}
           </ToggleButtonGroup>
           <div className="con">
-            <button
-              className="val"
-              onClick={(e) => {
-                handleValidate("left");
-              }}
-            ></button>
-            <button
-              className="val"
-              onClick={(e) => {
-                handleValidate("right");
-              }}
-            ></button>
-            <button
-              className="reset"
-              onClick={(e) => {
-                resetValidate();
-              }}
-            ></button>
             <div className="my-slider-container">
-              <input
-                onChange={handleSidler}
-                type={"range"}
-                value={`${validatePoints.scroll}`}
-                // debounceTime={1}
-                className="my-slider-face"
-              />
-              <>{validatePoints.scroll}</>
+              {myUserConfig[alignment]?.map((config, index) => (
+                <Auth
+                  key={index}
+                  config={config}
+                  onChangeHandlerValue={(isValid) =>
+                    handleOnChange(isValid, index)
+                  }
+                />
+              ))}
             </div>
           </div>
         </div>
       )}
-    </>
+    </div>
   ) : (
     <Header />
   );
