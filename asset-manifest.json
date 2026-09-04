@@ -1,15 +1,18 @@
 {
   "files": {
-    "main.css": "/dream/static/css/main.d292411b.css",
-    "main.js": "/dream/static/js/main.59b5489a.js",
+    "main.css": "/dream/static/css/main.8c24c32e.css",
+    "main.js": "/dream/static/js/main.f488f987.js",
     "static/js/453.49834109.chunk.js": "/dream/static/js/453.49834109.chunk.js",
+    "static/media/spiderman-bg.png": "/dream/static/media/spiderman-bg.af0131894233c8a1939e.png",
+    "static/media/spiderman-web-strand.png": "/dream/static/media/spiderman-web-strand.ba26f72c5919d574e7cc.png",
+    "static/media/spiderman-mask.png": "/dream/static/media/spiderman-mask.0a92e7c1903dacfdc252.png",
     "index.html": "/dream/index.html",
-    "main.d292411b.css.map": "/dream/static/css/main.d292411b.css.map",
-    "main.59b5489a.js.map": "/dream/static/js/main.59b5489a.js.map",
+    "main.8c24c32e.css.map": "/dream/static/css/main.8c24c32e.css.map",
+    "main.f488f987.js.map": "/dream/static/js/main.f488f987.js.map",
     "453.49834109.chunk.js.map": "/dream/static/js/453.49834109.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.d292411b.css",
-    "static/js/main.59b5489a.js"
+    "static/css/main.8c24c32e.css",
+    "static/js/main.f488f987.js"
   ]
 }
